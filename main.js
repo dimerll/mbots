@@ -626,8 +626,10 @@ function createWindow () {
     setTimeout(async () => {
       try {
         if (!win || win.isDestroyed()) return
-        if (process.env.MBOTS_EVAL) {
-          const r = await win.webContents.executeJavaScript(process.env.MBOTS_EVAL)
+        const expr = process.env.MBOTS_EVAL ||
+          (process.env.MBOTS_EVAL_FILE ? fs.readFileSync(process.env.MBOTS_EVAL_FILE, 'utf8') : '')
+        if (expr) {
+          const r = await win.webContents.executeJavaScript(expr)
           console.log('[Mbots] eval =>', JSON.stringify(r))
         }
         const img = await win.webContents.capturePage()
