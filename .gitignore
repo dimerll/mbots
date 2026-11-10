@@ -1,0 +1,14 @@
+# 依赖与构建产物
+node_modules/
+dist/
+dist_old_*/
+
+# 图标中间产物
+.iconset/
+
+# 本地调试截图
+_debug/
+
+*.log
+.DS_Store
+Thumbs.db

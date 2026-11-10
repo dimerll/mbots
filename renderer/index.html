@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; font-src 'self'" />
+  <title>Mbots</title>
+  <link rel="stylesheet" href="fonts/misans/misans.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════ 标题栏 ══════════════════ -->
+<header id="titlebar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" width="19" height="19">
+        <defs>
+          <linearGradient id="bm" x1="0.2" y1="0" x2="0.6" y2="1">
+            <stop offset="0" stop-color="#4b8bff"/>
+            <stop offset="0.55" stop-color="#1a56ec"/>
+            <stop offset="1" stop-color="#0c33b8"/>
+          </linearGradient>
+        </defs>
+        <path d="M12 2.8c4.3 0 7 3.1 7 7 0 2.2-.6 3.4-.6 4.8 0 1.8 1.2 2.8 1.2 4.3 0 2.1-1.8 3.1-3.7 3.1-1.5 0-2.5-.6-3.9-.6s-2.4.6-3.9.6c-1.9 0-3.7-1-3.7-3.1 0-1.5 1.2-2.5 1.2-4.3 0-1.4-.6-2.6-.6-4.8 0-3.9 2.7-7 7-7z"
+              fill="url(#bm)"/>
+        <ellipse cx="12" cy="9.2" rx="4.7" ry="4.3" fill="#0d2f96" opacity="0.85"/>
+        <circle cx="10.2" cy="9" r="0.82" fill="#08111f"/>
+        <circle cx="13.8" cy="9" r="0.82" fill="#08111f"/>
+        <path d="M10.7 10.9q1.3 1.05 2.6 0" fill="none" stroke="#08111f"
+              stroke-width="0.72" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">Mbots</span>
+      <span class="brand-sub">多账号工作台</span>
+    </div>
+  </div>
+
+  <div class="tb-center">
+    <div class="pill" id="pill">
+      <span class="pill-av" id="pill-av">1</span>
+      <span class="pill-meta">
+        <span class="pill-name" id="pill-name">账号 1</span>
+        <span class="pill-host" id="pill-host">muse.ai</span>
+      </span>
+      <span class="pill-sep"></span>
+      <button class="icon-btn sm" id="btn-home" title="回到首页">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 10.6 12 4l8 6.6"/><path d="M6.2 9.8V19h11.6V9.8"/>
+        </svg>
+      </button>
+      <button class="icon-btn sm" id="btn-reload" title="刷新 · Ctrl R">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.6 4.8V10h-5.2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="win-ctrl">
+    <button class="wc-btn" id="btn-min" title="最小化">
+      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor"
+           stroke-width="1.7" stroke-linecap="round"><path d="M5.5 12h13"/></svg>
+    </button>
+    <button class="wc-btn" id="btn-max" title="最大化">
+      <svg class="ico-max" viewBox="0 0 24 24" width="10.5" height="10.5" fill="none"
+           stroke="currentColor" stroke-width="1.7"><rect x="6" y="6" width="12" height="12" rx="2.2"/></svg>
+      <svg class="ico-restore" viewBox="0 0 24 24" width="10.5" height="10.5" fill="none"
+           stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+        <rect x="4.6" y="8.2" width="11.2" height="11.2" rx="2"/>
+        <path d="M8.2 8.2V6.6a2 2 0 0 1 2-2h7.2a2 2 0 0 1 2 2v7.2a2 2 0 0 1-2 2h-1.6"/>
+      </svg>
+    </button>
+    <button class="wc-btn close" id="btn-close" title="关闭">
+      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor"
+           stroke-width="1.7" stroke-linecap="round"><path d="m7 7 10 10M17 7 7 17"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- 关闭方式（点右上角 × 时出现） -->
+<div id="close-menu" class="close-menu hidden">
+  <button class="cm-item" data-act="tray">
+    <span class="cm-ico">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 4v9"/><path d="m8.4 9.6 3.6 3.6 3.6-3.6"/><path d="M5 17.5h14"/>
+      </svg>
+    </span>
+    <span class="cm-text"><b>最小化到托盘</b><i>继续在后台运行，登录态不中断</i></span>
+  </button>
+  <button class="cm-item danger" data-act="quit">
+    <span class="cm-ico">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 5.5H6.8a1.8 1.8 0 0 0-1.8 1.8v9.4a1.8 1.8 0 0 0 1.8 1.8H14"/>
+        <path d="M16.5 8.6 20 12l-3.5 3.4"/><path d="M20 12h-9"/>
+      </svg>
+    </span>
+    <span class="cm-text"><b>退出 Mbots</b><i>结束所有账号的进程</i></span>
+  </button>
+  <div class="cm-foot">可在 设置 → 行为 里改默认动作</div>
+</div>
+
+<!-- ══════════════════ 侧栏 ══════════════════ -->
+<aside id="sidebar">
+  <div class="side-top">
+    <button class="cmd-trigger" id="btn-palette">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="6.4"/><path d="m15.8 15.8 4.2 4.2"/>
+      </svg>
+      <span>搜索或跳转</span>
+      <kbd id="kbd-palette">Ctrl K</kbd>
+    </button>
+  </div>
+
+  <div class="side-scroll">
+    <div class="side-head">
+      <span class="side-title">账号</span>
+      <span class="side-count" id="acct-count">0</span>
+    </div>
+    <div id="acct-list" role="list"></div>
+    <button class="add-row" id="btn-add">
+      <span class="add-ico">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>
+      </span>
+      <span>新建账号</span>
+      <kbd>Ctrl T</kbd>
+    </button>
+  </div>
+
+  <div class="side-foot">
+    <div class="mem" id="mem">
+      <span class="mem-dot" id="mem-dot"></span>
+      <span class="mem-label">内存</span>
+      <span class="mem-val" id="mem-text">—</span>
+    </div>
+    <button class="icon-btn" id="btn-settings" title="设置 · Ctrl ,">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.11a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.58 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.11A1.7 1.7 0 0 0 4.67 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.11a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.11a1.7 1.7 0 0 0-1.49 1z"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ══════════════════ 命令面板 ══════════════════ -->
+<div id="palette" class="layer hidden">
+  <div class="p-box" role="dialog" aria-label="命令面板">
+    <div class="p-input-row">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="6.4"/><path d="m15.8 15.8 4.2 4.2"/>
+      </svg>
+      <input id="p-input" type="text" spellcheck="false" autocomplete="off"
+             placeholder="输入账号名称或命令…" />
+      <kbd>Esc</kbd>
+    </div>
+    <div id="p-list" class="p-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ 设置 ══════════════════ -->
+<div id="settings" class="layer hidden">
+  <div class="s-backdrop"></div>
+  <div class="s-sheet" role="dialog" aria-label="设置">
+    <div class="s-head">
+      <h2>设置</h2>
+      <button class="icon-btn" id="btn-settings-close" title="关闭">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+             stroke-width="1.9" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="s-body">
+      <!-- 外观 -->
+      <section class="s-group">
+        <div class="s-group-title">外观</div>
+
+        <div class="s-row">
+          <div class="s-label"><b>主题</b><i>浅色、深色，或跟随 Windows</i></div>
+          <div class="seg" data-setting="theme">
+            <button data-value="light">浅色</button>
+            <button data-value="dark">深色</button>
+            <button data-value="system">跟随系统</button>
+          </div>
+        </div>
+
+        <div class="s-row col">
+          <div class="s-label"><b>强调色</b><i>默认取自 muse.ai 的品牌蓝</i></div>
+          <div class="swatches" data-setting="accent">
+            <button data-value="muse"    style="--sw:#0082fb"></button>
+            <button data-value="deep"    style="--sw:#0a53ea"></button>
+            <button data-value="sky"     style="--sw:#38bdf8"></button>
+            <button data-value="indigo"  style="--sw:#6e7bff"></button>
+            <button data-value="emerald" style="--sw:#2ec48c"></button>
+            <button data-value="rose"    style="--sw:#ef5f7d"></button>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-label"><b>字号</b><i>界面文字整体大小</i></div>
+          <div class="seg" data-setting="fontSize">
+            <button data-value="small">小</button>
+            <button data-value="medium">中</button>
+            <button data-value="large">大</button>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-label"><b>紧凑模式</b><i>收窄行距，一屏放更多账号</i></div>
+          <button class="switch" data-setting="compact" data-type="bool"></button>
+        </div>
+
+        <div class="s-row">
+          <div class="s-label"><b>界面动效</b><i>关闭后切换更硬朗、更省电</i></div>
+          <button class="switch" data-setting="motion" data-type="bool"></button>
+        </div>
+      </section>
+
+      <!-- 行为 -->
+      <section class="s-group">
+        <div class="s-group-title">行为</div>
+
+        <div class="s-row">
+          <div class="s-label"><b>后台休眠</b><i>闲置多久后释放账号的内存</i></div>
+          <div class="seg" data-setting="sleepMin">
+            <button data-value="1">1 分</button>
+            <button data-value="5">5 分</button>
+            <button data-value="15">15 分</button>
+            <button data-value="0">不睡</button>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-label"><b>关闭按钮</b><i>点右上角 × 时做什么</i></div>
+          <div class="seg" data-setting="closeAction">
+            <button data-value="ask">先问我</button>
+            <button data-value="tray">最小化</button>
+            <button data-value="quit">退出</button>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-label"><b>开机自启动</b><i>登录系统后自动打开 Mbots</i></div>
+          <button class="switch" data-setting="autoLaunch" data-type="bool"></button>
+        </div>
+      </section>
+
+      <!-- 数据 -->
+      <section class="s-group">
+        <div class="s-group-title">数据</div>
+        <div class="s-row">
+          <div class="s-label"><b>本地缓存</b><i id="cache-size">正在统计…</i></div>
+          <button class="btn-ghost" id="btn-clear-cache">清理</button>
+        </div>
+        <div class="s-row">
+          <div class="s-label"><b>全部账号休眠</b><i>立刻释放所有后台渲染进程</i></div>
+          <button class="btn-ghost" id="btn-sleep-all">执行</button>
+        </div>
+      </section>
+
+      <!-- 快捷键 -->
+      <section class="s-group">
+        <div class="s-group-title">快捷键</div>
+        <div class="keys">
+          <div><span>命令面板</span><kbd>Ctrl K</kbd></div>
+          <div><span>新建账号</span><kbd>Ctrl T</kbd></div>
+          <div><span>刷新当前页</span><kbd>Ctrl R</kbd></div>
+          <div><span>切到第 N 个账号</span><kbd>Ctrl 1–9</kbd></div>
+          <div><span>打开设置</span><kbd>Ctrl ,</kbd></div>
+          <div><span>最大化 / 还原</span><kbd>双击标题</kbd></div>
+        </div>
+      </section>
+
+      <div class="s-about">
+        <span>Mbots</span>
+        <span id="about-ver">v1.0.0</span>
+        <span id="about-core"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ 右键菜单 ══════════════════ -->
+<div id="ctxmenu" class="ctx hidden"></div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

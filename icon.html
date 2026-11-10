@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<!-- viewBox 贴紧本体：桌面/任务栏上和其他应用一样撑满画布 -->
+<svg viewBox="4 1 92 95" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="body" x1="0.22" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#5b8bff"/>
+      <stop offset="0.28" stop-color="#3369f4"/>
+      <stop offset="0.66" stop-color="#2455e4"/>
+      <stop offset="1" stop-color="#1c47cd"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0.32" y1="0.02" x2="0.66" y2="1">
+      <stop offset="0" stop-color="#4a7cf9"/>
+      <stop offset="1" stop-color="#2d5ee6"/>
+    </linearGradient>
+    <radialGradient id="topLight" cx="0.3" cy="0.04" r="0.78">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.17"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lowShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12308f" stop-opacity="0"/>
+      <stop offset="1" stop-color="#12308f" stop-opacity="0.28"/>
+    </linearGradient>
+    <radialGradient id="hood" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.6" stop-color="#0e2a86" stop-opacity="0"/>
+      <stop offset="0.87" stop-color="#0e2a86" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#0e2a86" stop-opacity="0.46"/>
+    </radialGradient>
+    <filter id="soft" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.9" flood-color="#0b1b63" flood-opacity="0.28"/>
+    </filter>
+
+    <!-- 一体成型的毛绒豆子：肩部平滑过渡，底部两只小短脚 -->
+    <path id="bodyPath" d="M50 4
+             C64.5 4 76 13.5 77.5 27
+             C78.3 34 80.5 40 83 47
+             C85.5 54 86.5 61 86 70
+             C85.6 80 83 87 79 91
+             C76 94 71 94.6 67 93.4
+             C61.5 91.2 54 86.6 50 86.6
+             C46 86.6 38.5 91.2 33 93.4
+             C29 94.6 24 94 21 91
+             C17 87 14.4 80 14 70
+             C13.5 61 14.5 54 17 47
+             C19.5 40 21.7 34 22.5 27
+             C24 13.5 35.5 4 50 4 Z"/>
+    <clipPath id="bodyClip"><use href="#bodyPath"/></clipPath>
+  </defs>
+
+  <g filter="url(#soft)">
+    <g clip-path="url(#bodyClip)">
+      <use href="#bodyPath" fill="url(#body)"/>
+      <rect x="0" y="0" width="100" height="100" fill="url(#topLight)"/>
+      <rect x="0" y="58" width="100" height="42" fill="url(#lowShade)"/>
+
+      <!-- 兜帽内圈：脸盘微微内凹 -->
+      <ellipse cx="50" cy="31" rx="19.2" ry="18.6" fill="url(#hood)"/>
+      <ellipse cx="50" cy="30.6" rx="16.2" ry="15.8" fill="url(#face)"/>
+      <ellipse cx="50" cy="29.2" rx="13.4" ry="12.8" fill="#ffffff" opacity="0.05"/>
+    </g>
+
+    <!-- 眼睛 + 微笑 -->
+    <circle cx="43.2" cy="29.6" r="2.55" fill="#0a1224"/>
+    <circle cx="56.8" cy="29.6" r="2.55" fill="#0a1224"/>
+    <path d="M44.4 35.8q5.6 4.6 11.2 0" fill="none" stroke="#0a1224"
+          stroke-width="1.95" stroke-linecap="round"/>
+
+    <!-- 肚子上的奶油色手写 M -->
+    <path d="M40.5 77 Q42.9 65.4 45 62.8 Q47.3 65.6 48.6 75
+             Q51 65 53.3 62.4 Q55.7 65.6 57.2 75.2 Q59.2 70 61 67.4"
+          fill="none" stroke="#f6e6bd" stroke-width="4.6"
+          stroke-linecap="round" stroke-linejoin="round"
+          transform="rotate(-3 48 69)"/>
+  </g>
+</svg>
+<script>
+  // 逐尺寸把 SVG 画到 canvas 再导出，才能保住透明背景
+  window.renderIcon = function (size) {
+    return new Promise(function (resolve, reject) {
+      var svg = document.querySelector('svg').cloneNode(true)
+      svg.setAttribute('width', size)
+      svg.setAttribute('height', size)
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+      var xml = new XMLSerializer().serializeToString(svg)
+      var img = new Image()
+      img.onload = function () {
+        var c = document.createElement('canvas')
+        c.width = size
+        c.height = size
+        var ctx = c.getContext('2d')
+        ctx.clearRect(0, 0, size, size)
+        ctx.drawImage(img, 0, 0, size, size)
+        resolve(c.toDataURL('image/png'))
+      }
+      img.onerror = reject
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml)
+    })
+  }
+</script>
+</body>
+</html>
