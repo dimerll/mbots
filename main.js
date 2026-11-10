@@ -65,10 +65,13 @@ function sleepAfterMs () {
 // ---------- 数据目录：迁移到 Mbots，同时保住旧的已登录分区 ----------
 function setupUserData () {
   const base = app.getPath('appData')
-  const target = path.join(base, 'Mbots')
+  // 调试用：MBOTS_DATA_DIR 指向独立数据目录，便于与已安装版同时运行
+  const target = process.env.MBOTS_DATA_DIR
+    ? path.resolve(process.env.MBOTS_DATA_DIR)
+    : path.join(base, 'Mbots')
   const legacy = path.join(base, 'muse-switcher')
 
-  if (!fs.existsSync(target) && fs.existsSync(legacy)) {
+  if (!process.env.MBOTS_DATA_DIR && !fs.existsSync(target) && fs.existsSync(legacy)) {
     try {
       fs.cpSync(legacy, target, { recursive: true, force: false, errorOnExist: false })
       console.log('[Mbots] 已从旧数据目录迁移:', legacy, '->', target)

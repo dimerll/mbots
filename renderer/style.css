@@ -322,22 +322,26 @@ kbd {
 .win-ctrl {
   margin-left: auto;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: 0;
   height: 100%;
+  padding-right: 6px;
   -webkit-app-region: no-drag;
 }
 .wc-btn {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 100%;
-  color: var(--tx-3);
-  transition: background 0.13s var(--ease), color 0.13s var(--ease);
+  width: 52px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--tx-2);
+  transition: background 0.13s var(--ease), color 0.13s var(--ease), transform 0.13s var(--ease);
 }
 .wc-btn:hover { background: var(--wash-3); color: var(--tx); }
-.wc-btn:active { background: var(--wash-4); }
+.wc-btn:active { background: var(--wash-4); transform: scale(0.94); }
 .wc-btn.close:hover { background: #e0453f; color: #fff; }
 .wc-btn.close:active { background: #c93a34; color: #fff; }
+body[data-compact='1'] .wc-btn { width: 46px; height: 34px; }
 .wc-btn .ico-restore { display: none; }
 body.maximized .wc-btn .ico-max { display: none; }
 body.maximized .wc-btn .ico-restore { display: block; }
@@ -953,7 +957,7 @@ body[data-compact='1'] .add-ico { width: 28px; height: 28px; border-radius: 9px;
 .close-menu {
   position: fixed;
   z-index: 70;
-  top: calc(var(--bar-h) + 6px);
+  top: calc(var(--bar-h) + 4px);
   right: 8px;
   width: 274px;
   padding: 6px;
