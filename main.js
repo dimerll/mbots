@@ -2,7 +2,7 @@
 
 const {
   app, BrowserWindow, WebContentsView, ipcMain, shell, session, Tray, Menu,
-  nativeImage, screen, nativeTheme
+  nativeImage, screen, nativeTheme, desktopCapturer
 } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
@@ -632,9 +632,55 @@ function createWindow () {
           const r = await win.webContents.executeJavaScript(expr)
           console.log('[Mbots] eval =>', JSON.stringify(r))
         }
-        const img = await win.webContents.capturePage()
+        let img = await win.webContents.capturePage()
+        // MBOTS_SHOT_MODE=compose：把原生视图（网页区）单独截一张，贴回渲染层截图的对应位置。
+        // capturePage 拍不到 WebContentsView，屏幕抓取又会被 GPU 合成挡成黑屏，只能分层合成。
+        if (process.env.MBOTS_SHOT_MODE === 'compose') {
+          const rec = views.get(attachedId)
+          if (rec && !rec.view.webContents.isDestroyed()) {
+            const vimg = await rec.view.webContents.capturePage()
+            const vb = rec.view.getBounds()
+            const bs = img.getSize()
+            const cb = win.getContentBounds()
+            const sx = bs.width / cb.width
+            const sy = bs.height / cb.height
+            const comp = new BrowserWindow({
+              show: false,
+              width: 320,
+              height: 240,
+              webPreferences: { offscreen: false },
+            })
+            await comp.loadURL('about:blank')
+            const url = await comp.webContents.executeJavaScript(`(async () => {
+              const load = (u) => new Promise((res, rej) => {
+                const i = new Image()
+                i.onload = () => res(i)
+                i.onerror = () => rej(new Error('image load failed'))
+                i.src = u
+              })
+              const c = document.createElement('canvas')
+              c.width = ${bs.width}
+              c.height = ${bs.height}
+              const g = c.getContext('2d')
+              const A = await load(${JSON.stringify(img.toDataURL())})
+              g.drawImage(A, 0, 0, ${bs.width}, ${bs.height})
+              const B = await load(${JSON.stringify(vimg.toDataURL())})
+              g.drawImage(
+                B,
+                ${Math.round(vb.x * sx)}, ${Math.round(vb.y * sy)},
+                ${Math.round(vb.width * sx)}, ${Math.round(vb.height * sy)}
+              )
+              return c.toDataURL('image/png')
+            })()`)
+            comp.destroy()
+            img = nativeImage.createFromDataURL(url)
+            console.log('[Mbots] 已合成网页层:', JSON.stringify({ view: vb, scale: [sx, sy] }))
+          } else {
+            console.log('[Mbots] 合成跳过：没有挂载中的视图')
+          }
+        }
         fs.writeFileSync(process.env.MBOTS_SHOT, img.toPNG())
-        console.log('[Mbots] 截图已保存:', process.env.MBOTS_SHOT)
+        console.log('[Mbots] 截图已保存:', process.env.MBOTS_SHOT, img.getSize())
       } catch (e) {
         console.error('[Mbots] 截图失败:', e.message)
       }

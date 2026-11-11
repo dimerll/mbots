@@ -13,9 +13,9 @@ const countEl = $('acct-count')
 const memText = $('mem-text')
 const memDot = $('mem-dot')
 
+const pill = $('pill')
 const pillAv = $('pill-av')
 const pillName = $('pill-name')
-const pillHost = $('pill-host')
 
 const paletteEl = $('palette')
 const pInput = $('p-input')
@@ -68,20 +68,15 @@ function hostOf (url) {
 function statusOf (acc) {
   if (acc.loading) return 'loading'
   if (acc.needsLogin) return 'warn'
+  if (acc.asleep) return ''
   if (acc.url) return 'ok'
   return ''
 }
 
 function subOf (acc) {
   if (acc.loading) return '加载中…'
-  if (acc.needsLogin) return acc.asleep ? '休眠 · 需要登录' : '需要登录'
-  if (acc.asleep) {
-    const h = hostOf(acc.url)
-    return h ? '休眠 · ' + h : '休眠'
-  }
-  const t = (acc.title || '').trim()
-  if (t) return t
-  return hostOf(acc.url) || 'muse.ai'
+  if (acc.needsLogin) return '需要登录'
+  return ''
 }
 
 function setText (el, txt) {
@@ -130,12 +125,10 @@ function buildRow (acc) {
 
 function paintRow (row, acc, index, isActive) {
   row.el.classList.toggle('active', isActive)
-  row.av.style.background = gradOf(index)
-  setText(row.avText, initialOf(acc.name))
   row.dot.className = statusOf(acc)
   setText(row.nm, acc.name)
   setText(row.sub, subOf(acc))
-  setText(row.idx, index < 9 ? String(index + 1) : '')
+  setText(row.idx, String(index + 1).padStart(2, '0'))
   row.sub.classList.toggle('warn', !!acc.needsLogin)
   row.sub.classList.toggle('asleep', !!acc.asleep && !acc.needsLogin)
   const tip = acc.name + (acc.url ? '\n' + acc.url : '\n未加载')
@@ -173,16 +166,16 @@ function paintPill (state) {
   const acc = idx >= 0 ? state.accounts[idx] : null
   if (!acc) {
     setText(pillName, '—')
-    setText(pillHost, '')
+    pill.title = ''
     return
   }
-  pillAv.style.background = gradOf(idx)
-  setText(pillAv, initialOf(acc.name))
+  pillAv.className = 'pill-av ' + (statusOf(acc) || '')
+  setText(pillAv, '')
   setText(pillName, acc.name)
 
-  if (acc.loading) setText(pillHost, '加载中…')
-  else if (acc.needsLogin) setText(pillHost, '需要登录')
-  else setText(pillHost, hostOf(acc.url) || 'muse.ai')
+  // 副标题去掉后，把运行状态放到 tooltip，信息不丢但不占版面
+  const hint = acc.loading ? '加载中…' : acc.needsLogin ? '需要登录' : hostOf(acc.url) || 'muse.ai'
+  pill.title = acc.name + ' · ' + hint
 }
 
 /* ---------------- 内存读数 ---------------- */
